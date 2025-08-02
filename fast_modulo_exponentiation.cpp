@@ -17,7 +17,6 @@
 #include <fstream>
 using namespace std;
 
-
 typedef int64_t ll;
 
 ll fastexpmod(ll base, ll pw, ll md) {
