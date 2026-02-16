@@ -66,10 +66,20 @@ typedef int64_t ll;
 
 struct point{
 	ll x, y;
+
+    friend ostream& operator<<(ostream& os, const point& p) {
+        os << "{" << p.x << ", " << p.y << "}";
+        return os;
+    }
 };
 
 struct eq{
 	ll a, b, c;
+
+    friend ostream& operator<<(ostream& os, const eq& e) {
+        os << "{" << e.a << "x + " << e.b << "y + " << e.c << "}";
+        return os;
+    }
 };
 
 // gets an equation(line) of style ax + by + c = 0, from two points
@@ -212,7 +222,23 @@ int main()
 	//cin.tie(nullptr);
 	//cout.tie(nullptr);
 
+    //point a = {1, 2};
+    //cout << a;
+    //eq e = {1, 2, 3};
+    //cout << e;
+
 	solve();
 
 	return 0;
 }
+
+/*
+
+should be working, 'been tested on
+CSES Point Location Test, CSES Line Segment Intersection, CF498A Crazy Town
+
+https://cses.fi/problemset/task/2189
+https://cses.fi/problemset/task/2190
+https://codeforces.com/contest/498/problem/A
+
+*/
