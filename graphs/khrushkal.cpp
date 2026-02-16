@@ -4,7 +4,7 @@
 #include <map>
 #include <cstdint>
  
-// krushkal with DSA, implemented for CSES: Road Reparation
+// krushkal with (homegrown) DSU, implemented for CSES: Road Reparation
 // https://cses.fi/problemset/result/12850239/
 
 #pragma GCC optimize("O2")
