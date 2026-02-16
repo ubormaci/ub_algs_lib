@@ -49,7 +49,6 @@ ll fastexpmod(ll base, ll pw, ll md) {
     }
 
     return ret;
-
 }
 
 void solve() {
