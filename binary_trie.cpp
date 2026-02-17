@@ -221,11 +221,7 @@ void debug() {
 }
 */
 
-void solve() {
-	
-	// initialization
-	// the first maxp elements are the elements of 0 with 33 bits
-
+void pre() {
 	for(ll i = 0; i <= maxp; i++) {
 		vl[i] = 0;
 		//pw[i] = i;
@@ -237,6 +233,12 @@ void solve() {
 			tp[i] = 2 * tp[i-1];
 		}
 	}
+}
+
+void solve() {
+	
+	// initialization
+	// the first maxp elements are the elements of 0 with 33 bits
 
 	ll q;
 	cin >> q;
@@ -268,6 +270,8 @@ int main()
 	std::ios_base::sync_with_stdio(false);
 	//cin.tie(nullptr);
 	//cout.tie(nullptr);
+
+	pre();
 
 	solve();
 
