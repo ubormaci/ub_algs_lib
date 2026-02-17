@@ -67,178 +67,191 @@ typedef int32_t ll;
 // minden szamot eltarolunk egy trie-ban
 // hatvanyokon megyunk lefele
 
-const ll maxp = 33;
+class binary_trie{
 
-ll nxt = maxp+1;
+	private:
 
-vector<vector<ll>> v(maxp+1, vector<ll>(2, -1));
-vector<ll> cnt(maxp+1, 1); // how many nodes of this type exist?
-vector<ll> vl(maxp+1, 0);
-//vector<ll> pw(maxp+1, 0);
-vector<ll> par(maxp+1, 0);
-//vector<bool> e(maxp+1, true);
-vector<ll> tp(maxp+1, 1);
+		const ll maxp = 30;
+		ll nxt = maxp+1;
 
-void getbin(ll h, vector<ll> &bin) {
+		vector<vector<ll>> v;
+		vector<ll> cnt; // how many nodes of this type exist?
+		vector<ll> vl;
+		//vector<ll> pw;
+		vector<ll> par;
+		//vector<bool> e;
+		vector<ll> tp;
 
-	bin.assign(maxp, 0);
-	ll c = h;
-	ll j = 0;
-	while(c > 0) {
-		if(c % 2 == 1) {
-			bin[j] = 1;
+		void getbin(ll h, vector<ll> &bin) {
+
+			bin.assign(maxp, 0);
+			ll c = h;
+			ll j = 0;
+			while(c > 0) {
+				if(c % 2 == 1) {
+					bin[j] = 1;
+				}
+				j++;
+				c /= 2;
+			}
 		}
-		j++;
-		c /= 2;
-	}
-}
 
-void ins(ll val) {
+	public:
 
-	// we get its binary form
+		void init() {
+			v.assign(maxp+1, vector<ll>(2, -1));
+			cnt.assign(maxp+1, 1);
+			vl.assign(maxp+1, 0);
+			//pw.assign(maxp+1, 0);
+			par.assign(maxp+1, 0);
+			//e.assign(maxp+1, true);
+			tp.assign(maxp+1, 1);
 
-	vector<ll> bin;
-	getbin(val, bin);
-	// we do from up to down
-	// and find the final value
+			for(ll i = 0; i <= maxp; i++) {
+				vl[i] = 0;
+				//pw[i] = i;
+				if(i < maxp) {
+					par[i] = i+1;
+				}
+				if(i > 0) {
+					v[i][0] = i-1;
+					tp[i] = 2 * tp[i-1];
+				}
+			}
+		}
 
-	// we go down
-	// once we see, that the next type of character doesn't exist, we create it
+		void ins(ll val) {
 
-	//cerr << "\nins=" << val;
-	//cerr << "\nbin=" << bin;
+			// we get its binary form
 
-	ll curr = maxp;
-	cnt[curr]++;
-	for(ll i = maxp-1; i>= 0; i--) {
+			vector<ll> bin;
+			getbin(val, bin);
+			// we do from up to down
+			// and find the final value
 
-		//cerr << "\ni=" << i << "; bin[i]=" << bin[i];
-		//cerr << "\nch=" << v[curr];
+			// we go down
+			// once we see, that the next type of character doesn't exist, we create it
 
-		if(v[curr][bin[i]] == -1) {
-			// the next position doesn't exist, uh-huh
+			//cerr << "\nins=" << val;
+			//cerr << "\nbin=" << bin;
 
-			v[curr][bin[i]] = nxt;
-			v.push_back(vector<ll>(2, -1));
-			cnt.push_back(1);
-			vl.push_back(bin[i]);
-			//pw.push_back(i);
-			par.push_back(curr);
-			//e.push_back(true);
-			curr = nxt;
-			nxt++;
-
-		}else{
-			// it exists, we jump to it
-
-			curr = v[curr][bin[i]];
+			ll curr = maxp;
 			cnt[curr]++;
+			for(ll i = maxp-1; i>= 0; i--) {
+
+				//cerr << "\ni=" << i << "; bin[i]=" << bin[i];
+				//cerr << "\nch=" << v[curr];
+
+				if(v[curr][bin[i]] == -1) {
+					// the next position doesn't exist, uh-huh
+
+					v[curr][bin[i]] = nxt;
+					v.push_back(vector<ll>(2, -1));
+					cnt.push_back(1);
+					vl.push_back(bin[i]);
+					//pw.push_back(i);
+					par.push_back(curr);
+					//e.push_back(true);
+					curr = nxt;
+					nxt++;
+
+				}else{
+					// it exists, we jump to it
+
+					curr = v[curr][bin[i]];
+					cnt[curr]++;
+				}
+
+			}
+
 		}
 
-	}
+		void rem(ll val) {
 
-}
+			// we do the traversal, as if an insertion
+			// but instead, we'll track the road and decrement the counter
+			// with occassional deletions also
 
-void rem(ll val) {
+			vector<ll> bin;
+			getbin(val, bin);
 
-	// we do the traversal, as if an insertion
-	// but instead, we'll track the road and decrement the counter
-	// with occassional deletions also
+			ll curr = maxp;
+			vector<ll> path(1, curr);
+			for(ll i = maxp-1; i>= 0; i--) {
 
-	vector<ll> bin;
-	getbin(val, bin);
+				//cerr << "\ni=" << i << "; bin[i]=" << bin[i];
+				//cerr << "\nch=" << v[curr];
 
-	ll curr = maxp;
-	vector<ll> path(1, curr);
-	for(ll i = maxp-1; i>= 0; i--) {
+				curr = v[curr][bin[i]];
+				path.push_back(curr);
+			}
 
-		//cerr << "\ni=" << i << "; bin[i]=" << bin[i];
-		//cerr << "\nch=" << v[curr];
+			// we trace back the path, and decrease count
+			// if count becomes zero, we "delete" the node
+			// by setting the parent's path towards it to zero
+			// and this is where it comes in handy that we know for each node its actual value
+			// (or not that much, actually)
 
-		curr = v[curr][bin[i]];
-		path.push_back(curr);
-	}
+			//cerr << "\nrem=" << val << "; path=" << path;
 
-	// we trace back the path, and decrease count
-	// if count becomes zero, we "delete" the node
-	// by setting the parent's path towards it to zero
-	// and this is where it comes in handy that we know for each node its actual value
-	// (or not that much, actually)
+			for(const auto & p : path) {
+				cnt[p]--;
+				if(cnt[p] == 0) {
+					// remove it from parent
+					ll ph = par[p];
+					v[ph][vl[p]] = -1;
+				}
+			}
 
-	//cerr << "\nrem=" << val << "; path=" << path;
-
-	for(const auto & p : path) {
-		cnt[p]--;
-		if(cnt[p] == 0) {
-			// remove it from parent
-			ll ph = par[p];
-			v[ph][vl[p]] = -1;
 		}
-	}
 
-}
+		ll query(ll val) {
 
-ll query(ll val) {
+			ll curr = maxp;
+			vector<ll> bin;
+			getbin(val, bin);
 
-	ll curr = maxp;
-	vector<ll> bin;
-	getbin(val, bin);
+			ll ret = 0;
 
-	ll ret = 0;
+			for(ll i = maxp-1; i>= 0; i--) {
+				// tehat most a curr-ben vagyunk
+				// es nezzuk, hogy a kovetkezo lepesben hova lephetunk
+				
+				// az i az maga a kovetkezo lepes
+				// ha a kovetkezo lepesben letezik bin[i]-vel ellentetes, odalepunk
+				// maskepp az azonosra lepunk
 
-	for(ll i = maxp-1; i>= 0; i--) {
-		// tehat most a curr-ben vagyunk
-		// es nezzuk, hogy a kovetkezo lepesben hova lephetunk
-		
-		// az i az maga a kovetkezo lepes
-		// ha a kovetkezo lepesben letezik bin[i]-vel ellentetes, odalepunk
-		// maskepp az azonosra lepunk
+				if(v[curr][1 - bin[i]] != -1) {
+					// opposite exists, hell yeah
+					ret += tp[i];
+					curr = v[curr][1 - bin[i]];
+				}else{
+					// oh well, we're not getting this
+					curr = v[curr][bin[i]];
+				}
+			}
 
-		if(v[curr][1 - bin[i]] != -1) {
-			// opposite exists, hell yeah
-			ret += tp[i];
-			curr = v[curr][1 - bin[i]];
-		}else{
-			// oh well, we're not getting this
-			curr = v[curr][bin[i]];
+			return ret;
 		}
-	}
 
-	return ret;
-}
+		void debug() {
 
-/*
-void debug() {
+			for(ll i = 0; i < nxt; i++) {
 
-	for(ll i = 0; i < nxt; i++) {
-
-		if(!e[i]) {
-			continue;
+				//if(!e[i]) { continue; }
+				cerr << "\ncurrent " << i << "; children=" << v[i] << "; parent=" << par[i] << "; value=" << vl[i] << /* "; pw=" << pw[i] << */ "; cnt=" << cnt[i];
+			}
 		}
-		cerr << "\ncurrent " << i << "; children=" << v[i] << "; parent=" << par[i] << "; value=" << vl[i] << "; pw=" << pw[i] << "; cnt=" << cnt[i];
-	}
+};
 
-}
-*/
-
-void pre() {
-	for(ll i = 0; i <= maxp; i++) {
-		vl[i] = 0;
-		//pw[i] = i;
-		if(i < maxp) {
-			par[i] = i+1;
-		}
-		if(i > 0) {
-			v[i][0] = i-1;
-			tp[i] = 2 * tp[i-1];
-		}
-	}
-}
 
 void solve() {
 	
 	// initialization
 	// the first maxp elements are the elements of 0 with 33 bits
+
+	binary_trie bt;
+	bt.init();
 
 	ll q;
 	cin >> q;
@@ -249,15 +262,15 @@ void solve() {
 		cin >> type >> h;
 
 		if(type == '+') {
-			ins(h);
+			bt.ins(h);
 			//sz++;
 		}
 		else if(type == '-') {
-			rem(h);
+			bt.rem(h);
 			//sz++;
 		}else{
 			// query
-			cout << query(h) << "\n";
+			cout << bt.query(h) << "\n";
 		}
 
 		//debug();
@@ -270,8 +283,6 @@ int main()
 	std::ios_base::sync_with_stdio(false);
 	//cin.tie(nullptr);
 	//cout.tie(nullptr);
-
-	pre();
 
 	solve();
 
