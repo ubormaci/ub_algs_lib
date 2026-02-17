@@ -77,7 +77,7 @@ class segtree{
 		vector<ll> tp; // two-powers
 		const ll dummy = 0; // for sum = 0
 
-		ll join(ll a, ll b) {
+		ll join(const ll a, const ll b) {
 			return a + b;
 		}
 
