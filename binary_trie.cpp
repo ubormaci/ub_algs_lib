@@ -64,9 +64,6 @@ set<ll, decltype(&cmp)> qu(cmp);
 
 typedef int32_t ll;
 
-// minden szamot eltarolunk egy trie-ban
-// hatvanyokon megyunk lefele
-
 class binary_trie{
 
 	private:
