@@ -241,7 +241,6 @@ class binary_trie{
 		}
 };
 
-
 void solve() {
 	
 	// initialization
