@@ -212,6 +212,48 @@ bool collision_segment_line(point a, point b, eq e) {
 
 }
 
+// v has the vertices of the polygon, where v[i].first = x_i, v[i].second = y_i
+// and there is a connection between the points {x_i, y_i} and {x_i+1, y_i+1}
+// outside is a point given that is outside the bounds of the polygon
+ll inside_polygon(vector<point>& v, point &outside, point &inside) {
+
+	// -1 -> outside
+	// 0 -> boundary
+	// 1 -> outside
+
+	// example on how to get an outside point:
+	// if abs(x,y) <= 1e9
+	// take 3e9
+	// and have outside_x = x+1, outside_y = y+3e9
+	// be careful of overflow
+
+	ll n = v.size();
+	ll cols = 0;
+
+	for(ll i = 0; i < n; i++) {
+
+		ll nxt = (i+1)%n;
+
+		// hogyha inside rajta van a szakaszon, direkt visszakuld zero
+		// maskepp nezi a collision
+
+		if(point_onsegment(v[i], v[nxt], inside)) {
+			return 0;
+		}
+
+		if(collision_of_segments(v[i], v[nxt], inside, outside)) {
+			cols++;
+		}
+	}
+
+	if(cols % 2 == 0) {
+		return -1;
+	}else{
+		return 1;
+	}
+
+}
+
 void solve() {
 
 }
@@ -235,10 +277,12 @@ int main()
 /*
 
 should be working, 'been tested on
-CSES Point Location Test, CSES Line Segment Intersection, CF498A Crazy Town
+CSES Point Location Test, CSES Line Segment Intersection, CF498A Crazy Town,
+CSES Point in Polygon
 
 https://cses.fi/problemset/task/2189
 https://cses.fi/problemset/task/2190
 https://codeforces.com/contest/498/problem/A
+https://cses.fi/problemset/task/2192/
 
 */
