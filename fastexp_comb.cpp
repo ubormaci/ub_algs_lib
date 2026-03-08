@@ -69,36 +69,20 @@ const ll md = 1e9 + 7;
 vector<ll> fact;
 
 ll fastexpmod(ll base, ll pw) {
- 
-    if(base == 0 && pw == 0) {
-        return 1;
-    }
- 
-    ll cp = 0; // currpow
-    ll cv = base; // currval
- 
+
+    ll p = base;
     ll ret = 1; // return value
- 
-    //cerr << "\npw=" << pw;
- 
+
     while(pw > 0) {
-        ll rm = pw % 2;
-        pw /= 2;
- 
-        //cerr << "\nrm=" << rm;
-        //cerr << "\ncv=" << cv;
- 
-        if(rm == 1) {
-            ret = (ret * cv) % md;
+        if(pw % 2 == 1) {
+            ret = (ret * p) % md;
         }
- 
-        cv = (cv * cv) % md;
-        cp++;
- 
+
+        p = (p * p) % md;
+        pw /= 2;
     }
- 
+
     return ret;
- 
 }
  
 ll comb(ll k, ll n) {
