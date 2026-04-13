@@ -130,6 +130,14 @@ class segtree{
 			return join(q(curr * 2, level-1, l, r), q(curr * 2 + 1, level-1, l, r));
 		}
 
+		ll getval(ll level, ll curr) {
+
+			if(curr < 0 || curr >= n) {
+				return dummy;
+			}
+			return v[level][curr];
+		}
+
 	public:
 
 		void init(ll size, vector<ll> inp) {
@@ -163,12 +171,13 @@ class segtree{
 
 		void upd(ll ind, ll val) {
 
-			ll diff = val - v[0][ind];
+			v[0][ind] = val;
 
-			ll level = 0;
+			ll level = 1;
+			ind /= 2;
 			while(level < lim) {
-				
-				v[level][ind] += diff;
+
+				v[level][ind] = join(getval(level-1, ind * 2), getval(level-1, ind * 2 + 1));
 				
 				ind /= 2;
 				level++;
