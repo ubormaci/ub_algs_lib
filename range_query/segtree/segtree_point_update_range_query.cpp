@@ -126,7 +126,21 @@ class segtree{
 			}
 
 			// reszlegesen van benne
+			// apro optimalizacio: ha csak a fele van benne, csak a felet hivja meg
+			// tehat mi az utolso ertek a bal gyerekben?
 
+			ll b = curr * 2;
+			ll leftlast = min(b * tp[level-1] + tp[level-1] - 1, n-1);
+
+			if(r <= leftlast) {
+				// only need left
+				return q(curr * 2, level-1, l, r);
+			}else if(l > leftlast) {
+				// only need right
+				return q(curr * 2 + 1, level-1, l, r);
+			}
+
+			// we need from both, and also, base return case
 			return join(q(curr * 2, level-1, l, r), q(curr * 2 + 1, level-1, l, r));
 		}
 
@@ -152,7 +166,7 @@ class segtree{
 
 			for(ll i = 0; i < lim; i++) {
 
-				ll sh = n / tp[i] + 5;
+				ll sh = n / tp[i] + 1;
 
 				v.push_back(vector<ll>(sh, dummy));
 			}
@@ -265,5 +279,8 @@ I'll look up a proper construction later, for now I'm trying to derive it on my 
 and I count it as a success
 
 edit: 2026-04-23, about two months later: reworked it to not use more than the needed amount of memory
+also added a micro-optimisation at branching
+and tested it with yosup as well
+https://judge.yosupo.jp/problem/point_add_range_sum
 
 */
