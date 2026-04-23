@@ -264,4 +264,6 @@ I'll look up a proper construction later, for now I'm trying to derive it on my 
 
 and I count it as a success
 
+edit: 2026-04-23, about two months later: reworked it to not use more than the needed amount of memory
+
 */
