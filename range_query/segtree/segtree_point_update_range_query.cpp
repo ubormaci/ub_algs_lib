@@ -167,7 +167,6 @@ class segtree{
 			for(ll i = 0; i < lim; i++) {
 
 				ll sh = n / tp[i] + 1;
-
 				v.push_back(vector<ll>(sh, dummy));
 			}
 
