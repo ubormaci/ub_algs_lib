@@ -72,11 +72,51 @@ class segtree{
 
 	private:
 		ll n;
-		vector<ll> tree;   
+		vector<ll> tree;
+        vector<ll> lazy;   
         const ll dummy = 0; // change for performed operation as needed
+        const ll lazydummy = 0; // some value that *cannot* appear
+                                // and or, does not change the answer
+                                // for addition, zero suffices
 
+        // how do we combine two elements of the tree?
         ll join(ll a, ll b) {
             return a + b;
+        }
+
+        // how do we combine two lazy values on a node?
+        void comblazy(ll curr, ll extra) {
+
+            // for addition, we just add them together
+            lazy[curr] = lazy[curr] + extra;
+        }
+
+        // how does the current node's value change when we apply the lazy value to it?
+        void applylazy(ll curr, ll tl, ll tr, ll val) {
+
+            // in case of sum, add the amount of elements * modification
+            ll len = tr - tl + 1;
+            tree[curr] = tree[curr] + len * val;
+            comblazy(curr, val);
+        }
+
+        void propagate(ll curr, ll tl, ll tr) {
+            // push the lazy operation to the children
+
+            if(lazy[curr] == lazydummy) {
+                return;
+            }
+
+            // transmit pending changes to children
+            if(tl != tr) {
+                
+                ll mid = (tl + tr)/2;
+
+                applylazy(curr * 2, tl, mid, lazy[curr]);
+                applylazy(curr * 2 + 1, mid+1, tr, lazy[curr]);
+            }
+
+            lazy[curr] = lazydummy;
         }
 
         void build(ll curr, ll l, ll r, vector<ll> &inp) {
@@ -98,9 +138,16 @@ class segtree{
                 return dummy;
             }
 
+            // we are at this node
+            // we want to apply changes, and then create pending changes
+            // for its children
+            // (only if there are changes, of course)
+
             if(l == tl && r == tr) {
                 return tree[curr];
             }
+
+            propagate(curr, tl, tr);
 
             ll mid = (tl + tr)/2;
 
@@ -111,16 +158,34 @@ class segtree{
 
         void u(ll curr, ll tl, ll tr, ll l, ll r, ll val) {
 
-            if(tl == tr) {
-                tree[curr] = val; // or += val, depending
-            }else{
+            if(l > r) {
+                return;
+            }
+
+            //cerr << "\ncurr=" << curr << "; tl=" << tl << "; tr=" << tr << "; l=" << l << "; r=" << r;
+
+            // combine lazy into children, then apply the lazy to this one
+
+            if(tl == l && tr == r) {
+
+                //cerr << "\nwe're covering the segment to be updated";
+
+                // on this node
+                // we apply the operation
+                // and then, transmit the pending operation to its children
+
+                applylazy(curr, tl, tr, val);
+
+                return;
+            }
+            else{
+
+                propagate(curr, tl, tr);
 
                 ll mid = (tl + tr)/2;
-                if(pos <= mid) {
-                    u(curr * 2, tl, mid, pos, val);
-                }else{
-                    u(curr * 2 + 1, mid+1, tr, pos, val);
-                }
+
+                u(curr * 2, tl, mid, l, min(r, mid), val);
+                u(curr * 2 + 1, mid+1, tr, max(l, mid+1), r, val);
 
                 tree[curr] = join(tree[curr * 2], tree[curr * 2 + 1]);
             }
@@ -130,6 +195,7 @@ class segtree{
         void segdbg(ll curr, ll l, ll r) {
 
             //cerr << "\ncurrent node is " << curr << "; l=" << l << "; r=" << r << ", stored value=" << tree[curr];
+            //cerr << "; havelazy=" << havelazy[curr] << "; lazy value=" << lazy[curr];
 
             if(l != r) {
                 ll mid = (l + r)/2;
@@ -144,6 +210,7 @@ class segtree{
 
             n = size;
             tree.assign(4 * n + 1, dummy);
+            lazy.assign(4 * n + 1, lazydummy);
             build(1, 0, n-1, inp);
 		}
 
@@ -151,8 +218,8 @@ class segtree{
             segdbg(1, 0, n-1);
         }
 
-		void update(ll ind, ll val) {
-            u(1, 0, n-1, ind, val);
+		void update(ll l, ll r, ll val) {
+            u(1, 0, n-1, l, r, val);
 		}
 
 		ll query(ll l, ll r) {
@@ -167,43 +234,45 @@ void solve() {
 	cin >> n >> q;
 
 	vector<ll> v(n, 0);
-	for(ll i = 0; i < n; i++) {
-		cin >> v[i];
-	}
-
 	//cerr << "\nv=" << v;
 
 	segtree st;
 	st.init(n, v);
 	
-	st.debug();
+    //cerr << "\nstarting state";
+	//st.debug();
 
 	for(ll i = 0; i < q; i++) {
-		
+
 		ll type;
 		cin >> type;
 
-		if(type == 1) {
+		if(type == 0) {
 
-			ll ind, val;
-			cin >> ind >> val;
+			ll l, r, val;
+			cin >> l >> r >> val;
 			
-            ind--;
+            l--;
+            r--;
 
-			st.update(ind, val);
+            //cerr << "\n\nupdate segment l=" << l << "; r=" << r << "; with value =" << val;
+			st.update(l, r, val);
 
-		}else if(type == 2) {
+		}else if(type == 1) {
 
 			ll a, b;
 			cin >> a >> b;
 			
             a--;
             b--;
-            
+
+            //cerr << "\n\nquery segment l=" << a << "; r=" << b;
+
             ll ans = st.query(a, b);
 			cout << ans << "\n";
 		}
 
+        //cerr << "\n\ntree situation";
 		//st.debug();
 	}
 
@@ -215,7 +284,11 @@ int main()
 	//cin.tie(nullptr);
 	//cout.tie(nullptr);
 
-	solve();
+	ll t;
+    cin >> t;
+    for(ll ti = 0; ti < t; ti++) {
+        solve();
+    }
 
 	return 0;
 }
@@ -223,8 +296,13 @@ int main()
 /*
 
 Range-update range-query lazy propagation segment tree
-tsted for CSES Prefix Sum Queries
-https://cses.fi/problemset/task/2166
+tsted for SPOJ horrible queries
+https://www.spoj.com/problems/HORRIBLE/
 
+add a value to all elements in range [l, r]
+answer sum of elements in range [l, r]
+
+many thanks to the USACO guide team
+https://usaco.guide/plat/RURQ?lang=cpp
 
 */
