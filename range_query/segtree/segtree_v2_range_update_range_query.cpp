@@ -194,8 +194,8 @@ class segtree{
 
         void segdbg(ll curr, ll l, ll r) {
 
-            //cerr << "\ncurrent node is " << curr << "; l=" << l << "; r=" << r << ", stored value=" << tree[curr];
-            //cerr << "; havelazy=" << havelazy[curr] << "; lazy value=" << lazy[curr];
+            cerr << "\ncurrent node is " << curr << "; l=" << l << "; r=" << r << ", stored value=" << tree[curr];
+            cerr << "; havelazy=" << havelazy[curr] << "; lazy value=" << lazy[curr];
 
             if(l != r) {
                 ll mid = (l + r)/2;

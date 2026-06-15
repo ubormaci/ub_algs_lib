@@ -129,7 +129,7 @@ class segtree{
 
         void segdbg(ll curr, ll l, ll r) {
 
-            //cerr << "\ncurrent node is " << curr << "; l=" << l << "; r=" << r << ", stored value=" << tree[curr];
+            cerr << "\ncurrent node is " << curr << "; l=" << l << "; r=" << r << ", stored value=" << tree[curr];
 
             if(l != r) {
                 ll mid = (l + r)/2;
@@ -176,7 +176,7 @@ void solve() {
 	segtree st;
 	st.init(n, v);
 	
-	st.debug();
+	//st.debug();
 
 	for(ll i = 0; i < q; i++) {
 		
